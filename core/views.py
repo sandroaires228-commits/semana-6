@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.db.models import Sum
+from decimal import Decimal
 
-from .models import Servidor
+from .models import Servidor, Categoria, LancamentoFinanceiro
 from .forms import ServidorForm
 
 
@@ -47,3 +49,39 @@ def servidores_edit(request, pk):
     else:
         form = ServidorForm(instance=servidor)
     return render(request, "core/servidor_form.html", {"form": form, "servidor": servidor})
+
+
+def financeiro_dashboard(request):
+    """Dashboard executivo que sumariza Ativos x Passivos e por categoria.
+
+    Exibe totais agregados e um resumo por categoria para auxiliar decisões
+    financeiras rápidas (visão inspirada em conceitos de fluxo de caixa).
+    """
+
+    total_ativos = (
+        LancamentoFinanceiro.objects.filter(categoria__tipo=Categoria.TIPO_ATIVO)
+        .aggregate(total=Sum("valor"))
+        .get("total")
+    )
+    total_passivos = (
+        LancamentoFinanceiro.objects.filter(categoria__tipo=Categoria.TIPO_PASSIVO)
+        .aggregate(total=Sum("valor"))
+        .get("total")
+    )
+
+    total_ativos = total_ativos or Decimal("0.00")
+    total_passivos = total_passivos or Decimal("0.00")
+
+    categorias = (
+        Categoria.objects.all()
+        .annotate(total=Sum("lancamentos__valor"))
+        .order_by("-total")
+    )
+
+    context = {
+        "total_ativos": total_ativos,
+        "total_passivos": total_passivos,
+        "categorias": categorias,
+    }
+
+    return render(request, "core/financeiro_dashboard.html", context)

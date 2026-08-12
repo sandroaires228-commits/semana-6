@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1>Dashboard Financeiro</h1>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Total de Ativos</h5>
+          <p class="card-text">R$ {{ total_ativos }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Total de Passivos</h5>
+          <p class="card-text">R$ {{ total_passivos }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Resumo por Categoria</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Categoria</th>
+        <th>Tipo</th>
+        <th>Total (R$)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in categorias %}
+      <tr>
+        <td>{{ c.nome }}</td>
+        <td>{{ c.tipo }}</td>
+        <td>{{ c.total|default:0 }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3">Nenhuma categoria encontrada.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <a href="/" class="btn btn-secondary">Voltar</a>
+</div>
+{% endblock %}
