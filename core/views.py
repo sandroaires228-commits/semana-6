@@ -6,6 +6,7 @@ from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from .forms import FinanceiroFilterForm
+from django.contrib.auth.decorators import permission_required
 from django.http import JsonResponse
 from django.db.models.functions import TruncMonth
 
@@ -58,6 +59,7 @@ def servidores_edit(request, pk):
 
 @login_required
 @staff_member_required
+@permission_required('core.view_lancamentofinanceiro', raise_exception=True)
 def financeiro_dashboard(request):
     """Dashboard executivo que sumariza Ativos x Passivos e por categoria.
 
