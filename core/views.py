@@ -5,6 +5,7 @@ from django.db.models import Sum
 from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from .forms import FinanceiroFilterForm
 
 from .models import Servidor, Categoria, LancamentoFinanceiro
 from .forms import ServidorForm
@@ -62,13 +63,26 @@ def financeiro_dashboard(request):
     financeiras rápidas (visão inspirada em conceitos de fluxo de caixa).
     """
 
+    form = FinanceiroFilterForm(request.GET or None)
+
+    qs = LancamentoFinanceiro.objects.all()
+    if form.is_valid():
+        start = form.cleaned_data.get("start_date")
+        end = form.cleaned_data.get("end_date")
+        if start and end:
+            qs = qs.filter(data_vencimento__range=(start, end))
+        elif start:
+            qs = qs.filter(data_vencimento__gte=start)
+        elif end:
+            qs = qs.filter(data_vencimento__lte=end)
+
     total_ativos = (
-        LancamentoFinanceiro.objects.filter(categoria__tipo=Categoria.TIPO_ATIVO)
+        qs.filter(categoria__tipo=Categoria.TIPO_ATIVO)
         .aggregate(total=Sum("valor"))
         .get("total")
     )
     total_passivos = (
-        LancamentoFinanceiro.objects.filter(categoria__tipo=Categoria.TIPO_PASSIVO)
+        qs.filter(categoria__tipo=Categoria.TIPO_PASSIVO)
         .aggregate(total=Sum("valor"))
         .get("total")
     )
@@ -86,6 +100,7 @@ def financeiro_dashboard(request):
         "total_ativos": total_ativos,
         "total_passivos": total_passivos,
         "categorias": categorias,
+        "filter_form": form,
     }
 
     return render(request, "core/financeiro_dashboard.html", context)

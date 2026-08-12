@@ -3,6 +3,21 @@
 {% block content %}
 <div class="container mt-4">
   <h1>Dashboard Financeiro</h1>
+  <form method="get" class="row g-2 align-items-end">
+    <div class="col-auto">
+      <label for="id_start_date" class="form-label">Início</label>
+      <input type="date" name="start_date" id="id_start_date" class="form-control" value="{{ filter_form.start_date.value|default_if_none:'' }}" />
+    </div>
+    <div class="col-auto">
+      <label for="id_end_date" class="form-label">Fim</label>
+      <input type="date" name="end_date" id="id_end_date" class="form-control" value="{{ filter_form.end_date.value|default_if_none:'' }}" />
+    </div>
+    <div class="col-auto">
+      <button type="submit" class="btn btn-primary">Aplicar</button>
+      <a href="{% url 'financeiro_dashboard' %}" class="btn btn-outline-secondary ms-1">Limpar</a>
+    </div>
+  </form>
+
   <div class="row my-4">
     <div class="col-md-4">
       <div class="card text-white bg-success mb-3">
