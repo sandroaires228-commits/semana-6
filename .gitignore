@@ -1,1 +1,16 @@
 db.sqlite3
+__pycache__/
+
+*.py[cod]
+
+*.pyc
+
+.vscode/
+
+.venv/
+
+.idea/
+
+.pytest_cache/
+
+*.sqlite3
