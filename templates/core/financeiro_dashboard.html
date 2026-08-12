@@ -45,6 +45,17 @@
     </div>
   </div>
 
+  <div class="row my-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Tendência Mensal (Ativos x Passivos)</h5>
+          <canvas id="financeChart" width="800" height="250"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <h3>Resumo por Categoria</h3>
   <div class="table-responsive shadow-sm rounded">
     <table class="table table-hover align-middle mb-0">
@@ -88,4 +99,53 @@
     <a href="/" class="btn btn-secondary">Voltar</a>
   </div>
 </div>
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const ctx = document.getElementById('financeChart');
+  if (!ctx) return;
+
+  const url = "{% url 'financeiro_trends' %}" + window.location.search;
+  fetch(url)
+    .then(r => r.json())
+    .then(data => {
+      const labels = data.labels || [];
+      const ativos = data.ativos || [];
+      const passivos = data.passivos || [];
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Ativos',
+              data: ativos,
+              borderColor: 'rgba(25, 135, 84, 1)',
+              backgroundColor: 'rgba(25, 135, 84, 0.15)',
+              tension: 0.2,
+            },
+            {
+              label: 'Passivos',
+              data: passivos,
+              borderColor: 'rgba(220, 53, 69, 1)',
+              backgroundColor: 'rgba(220, 53, 69, 0.15)',
+              tension: 0.2,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    })
+    .catch(() => { /* silencioso — não bloquear UI */ });
+});
+</script>
+{% endblock %}
 {% endblock %}
