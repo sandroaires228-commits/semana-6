@@ -3,6 +3,8 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.db.models import Sum
 from decimal import Decimal
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 
 from .models import Servidor, Categoria, LancamentoFinanceiro
 from .forms import ServidorForm
@@ -51,6 +53,8 @@ def servidores_edit(request, pk):
     return render(request, "core/servidor_form.html", {"form": form, "servidor": servidor})
 
 
+@login_required
+@staff_member_required
 def financeiro_dashboard(request):
     """Dashboard executivo que sumariza Ativos x Passivos e por categoria.
 
