@@ -107,6 +107,9 @@ def financeiro_dashboard(request):
         "filter_form": form,
     }
 
+    # saldo disponível (ativos - passivos)
+    context["saldo"] = total_ativos - total_passivos
+
     return render(request, "core/financeiro_dashboard.html", context)
 
 
