@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso Seguro — Dominus System</title>
+    <!-- CSS Offline do Bootstrap v5 -->
+    <link href="{% static 'main/css/bootstrap.min.css' %}" rel="stylesheet">
+</head>
+<body class="bg-dark d-flex align-items-center" style="height: 100vh;">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mx-auto">
+
+                <!-- Card Centralizado de Login -->
+                <div class="card shadow-lg border-0">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-4">
+                            <h4 class="text-primary fw-bold">DOMINUS SYSTEM</h4>
+                            <p class="text-muted small">Insira suas credenciais técnicas para acessar</p>
+                        </div>
+
+                        <form method="post" novalidate>
+                            {% csrf_token %}
+
+                            <!-- Exibe erros gerais de login (credenciais incorretas) -->
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger py-2 small" role="alert">
+                                    Usuário ou senha inválidos.
+                                </div>
+                            {% endif %}
+
+                            <!-- Campo de Usuário -->
+                            <div class="mb-3">
+                                <label for="id_username" class="form-label small fw-bold">Nome de Usuário</label>
+                                <input type="text" name="username" id="id_username" class="form-control" required placeholder="Digite o login técnico">
+                            </div>
+
+                            <!-- Campo de Senha -->
+                            <div class="mb-4">
+                                <label for="id_password" class="form-label small fw-bold">Senha de Segurança</label>
+                                <input type="password" name="password" id="id_password" class="form-control" required placeholder="••••••••">
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary fw-bold">Entrar no Sistema</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                    <small class="text-white-50">Estritamente para uso corporativo do Centro Cândido Athayde.</small>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Offline do Bootstrap v5 -->
+    <script src="{% static 'main/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

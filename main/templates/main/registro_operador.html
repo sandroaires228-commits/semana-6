@@ -1,0 +1,25 @@
+{% extends 'main/base.html' %}
+
+{% block titulo %}Registrar Novo Operador — Dominus System{% endblock %}
+
+{% block conteudo %}
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card shadow-sm border-0 my-4">
+            <div class="card-body p-4">
+                <h4 class="text-primary fw-bold mb-3">Registrar Novo Operador Técnico</h4>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form_cadastro.as_p }}
+                    
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="submit" class="btn btn-success fw-bold">Cadastrar Operador</button>
+                        <a href="{% url 'painel' %}" class="btn btn-outline-secondary">Voltar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

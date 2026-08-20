@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Dominus — Decision Game & Anti-Impulse System{% endblock %}</title>
+    <!-- CSS Offline do Bootstrap v5 -->
+    <link href="{% static 'main/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'main/css/estilo_corporativo.css' %}">
+</head>
+<body class="bg-light d-flex flex-column min-vh-100" style="margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+
+    <!-- CABEÇALHO MESTRE DOMINUS -->
+    <header style="background-color: #002b49; color: #ffffff; padding: 18px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+        <div>
+            <h1 style="margin: 0; font-size: 1.5rem; font-weight: bold; letter-spacing: 0.8px;">
+                DOMINUS <span style="font-size: 0.85rem; font-weight: normal; color: #00d2ff;">| Decision Game & Anti-Impulse</span>
+            </h1>
+        </div>
+
+        <!-- CONTROLE DE SESSÃO / OPERADOR LOGADO (SEMANA 8) -->
+        {% if user.is_authenticated %}
+            <div class="d-flex align-items-center">
+                <a href="{% url 'registrar_operador' %}" class="btn btn-outline-info btn-sm me-3 fw-bold">
+                    + Registrar Operador
+                </a>
+                <span class="me-3 small" style="background-color: #003d66; padding: 6px 12px; border-radius: 4px;">
+                    Operador: <strong>{{ user.username }}</strong>
+                </span>
+                <form method="post" action="{% url 'logout' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm fw-bold">Desconectar</button>
+                </form>
+            </div>
+        {% else %}
+            <span style="font-size: 0.85rem; background-color: #003d66; padding: 6px 12px; border-radius: 4px; font-weight: 500;">
+                CFP Cândido Athayde
+            </span>
+        {% endif %}
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL (MVT) -->
+    <main class="container my-4 flex-grow-1" style="max-width: 1100px;">
+        {% block conteudo %}
+        {% endblock conteudo %}
+    </main>
+
+    <!-- RODAPÉ CORPORATIVO -->
+    <footer style="text-align: center; padding: 20px; font-size: 0.85rem; color: #6c757d; margin-top: auto; border-top: 1px solid #dee2e6; background-color: #ffffff;">
+        © 2026 <strong>Dominus System</strong> • Gestão Estratégica, Finanças Comportamentais e Prevenção de Impulso.<br>
+        Curso Técnico em Desenvolvimento de Sistemas — CFP Cândido Athayde (SENAI Piauí).
+    </footer>
+
+    <!-- JS Offline do Bootstrap v5 -->
+    <script src="{% static 'main/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
