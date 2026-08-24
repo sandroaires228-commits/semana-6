@@ -1,56 +1,38 @@
 from django.db import models
-
-
-class Categoria(models.Model):
-    """
-    Representa o agrupamento temático de gastos (ex: Lazer, Alimentação, Eletrônicos).
-    """
-    nome = models.CharField(max_length=50, unique=True, verbose_name="Categoria")
-    limite_mensal = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0.00, verbose_name="Teto Orçamentário (R$)"
-    )
-
-    class Meta:
-        verbose_name = "Categoria"
-        verbose_name_plural = "Categorias"
-
-    def __str__(self) -> str:
-        return self.nome
-
+from django.utils import timezone
+from datetime import timedelta
 
 class RegistroGasto(models.Model):
-    """
-    Mapeia as transações financeiras e audita os gatilhos de consumo impulsivo.
-    """
-    GATILHO_CHOICES = [
-        ('REDE_SOCIAL', 'Anúncio em Rede Social'),
-        ('E-MAIL_PROMOCIONAL', 'E-mail / Notificação de Promoção'),
-        ('DESCONTO_TEMPORAL', 'Oferta por Tempo Limitado (Cupom/Flash Sale)'),
-        ('NECESSIDADE_REAL', 'Compra Planejada / Necessidade Real'),
+    CATEGORIA_CHOICES = [
+        ('essenciais', 'Gastos Essenciais'),
+        ('lazer', 'Lazer'),
+        ('eletronicos', 'Eletrônicos'),
+        ('vestuario', 'Vestuário'),
+        ('outros', 'Outros'),
     ]
 
-    descricao = models.CharField(max_length=100, verbose_name="Descrição do Item/Serviço")
-    valor = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Valor (R$)")
-    categoria = models.ForeignKey(
-        Categoria, on_delete=models.PROTECT, related_name="gastos", verbose_name="Categoria"
-    )
-    is_impulsivo = models.BooleanField(
-        default=False, 
-        verbose_name="Compra Impulsiva?", 
-        help_text="Marque se a compra foi realizada sem planejamento prévio de 24 horas."
-    )
-    gatilho = models.CharField(
-        max_length=30, 
-        choices=GATILHO_CHOICES, 
-        default='NECESSIDADE_REAL', 
-        verbose_name="Gatilho de Consumo"
-    )
-    data_compra = models.DateTimeField(auto_now_add=True, verbose_name="Data/Hora da Transação")
+    ESTADO_CHOICES = [
+        ('PLANEJADO', 'Planejado / Efetivado'),
+        ('CONGELADO', 'Na Geladeira (Reflexão)'),
+        ('DESISTIDO', 'Compra Abortada (Economizado)'),
+    ]
 
-    class Meta:
-        verbose_name = "Registro de Gasto"
-        verbose_name_plural = "Registros de Gastos"
+    descricao = models.CharField(max_length=100)
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    categoria = models.CharField(max_length=20, choices=CATEGORIA_CHOICES, default='outros')
+    
+    # Flags da Engenharia Comportamental
+    impulso = models.BooleanField(default=False)
+    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='PLANEJADO')
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    dias_reflexao = models.IntegerField(default=3) # Período padrão de resfriamento
 
-    def __str__(self) -> str:
-        tag_impulso = "[IMPULSIVO]" if self.is_impulsivo else "[PLANEJADO]"
-        return f"{tag_impulso} {self.descricao} - R$ {self.valor}"
+    def esta_pronto_para_decisao(self):
+        """Regra de Negócio: Verifica se o tempo de geladeira expirou."""
+        if not self.impulso or self.estado != 'CONGELADO':
+            return True
+        data_liberacao = self.data_criacao + timedelta(dias=self.dias_reflexao)
+        return timezone.now() >= data_liberacao
+
+    def __str__(self):
+        return f"{self.descricao} - R$ {self.valor} [{self.estado}]"

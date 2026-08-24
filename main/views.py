@@ -1,93 +1,73 @@
-# main/views.py
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.db.models import Sum
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 from .models import RegistroGasto
 from .forms import RegistroGastoForm
 
-# ─── 1. VISÕES PROTEGIDAS (MVT) ───
-
-@login_required  # Dia 33: Proteção de Rota por Autenticação
-def painel_financeiro(request: HttpRequest) -> HttpResponse:
+# 1. View Principal do Painel
+def painel_view(request):
     if request.method == 'POST':
         form = RegistroGastoForm(request.POST)
         if form.is_valid():
-            gasto = form.save()
-            if gasto.is_impulsivo:
-                messages.warning(request, f"⚠️ Alerta Anti-Impulso: O gasto '{gasto.descricao}' foi registrado como compra por impulso!")
-            else:
-                messages.success(request, f"✅ Lançamento planejado '{gasto.descricao}' registrado com sucesso.")
+            gasto = form.save(commit=False)
+            gasto.estado = 'CONGELADO' if gasto.impulso else 'PLANEJADO'
+            gasto.save()
             return redirect('painel')
-        else:
-            messages.error(request, "Falha na validação do lançamento. Verifique os erros apontados no formulário.")
     else:
         form = RegistroGastoForm()
 
-    todos_os_gastos = RegistroGasto.objects.all().order_by('-id')
-    contexto = {
+    registros = RegistroGasto.objects.exclude(estado='DESISTIDO').order_by('-id')
+    economia_potencial = RegistroGasto.objects.filter(estado='CONGELADO').aggregate(total=Sum('valor'))['total'] or 0.00
+    itens_geladeira = RegistroGasto.objects.filter(estado='CONGELADO').count()
+
+    context = {
         'form': form,
-        'lista_gastos': todos_os_gastos,
-        'total_registros': todos_os_gastos.count()
+        'registros': registros,
+        'economia_potencial': economia_potencial,
+        'itens_geladeira': itens_geladeira,
     }
-    return render(request, 'main/painel.html', contexto)
+    return render(request, 'main/painel.html', context)
 
-@login_required  # Dia 35: Exclusão Segura em 2 Passos
-def view_excluir_gasto(request: HttpRequest, pk: int) -> HttpResponse:
-    gasto_objeto = get_object_or_404(RegistroGasto, id=pk)
+# 2. View para Excluir Registro
+def excluir_gasto_view(request, id):
+    gasto = get_object_or_404(RegistroGasto, id=id)
+    gasto.delete()
+    return redirect('painel')
 
+# 3. View para Editar Registro
+def editar_gasto_view(request, id):
+    gasto = get_object_or_404(RegistroGasto, id=id)
     if request.method == 'POST':
-        descricao_excluida = gasto_objeto.descricao
-        gasto_objeto.delete()
-        messages.success(request, f"Registro '{descricao_excluida}' removido com sucesso do banco de dados!")
-        return redirect('painel')
+        form = RegistroGastoForm(request.POST, instance=gasto)
+        if form.is_valid():
+            form.save()
+            return redirect('painel')
+    else:
+        form = RegistroGastoForm(instance=gasto)
+    return render(request, 'main/editar_gasto.html', {'form': form, 'gasto': gasto})
 
-    return render(request, "main/confirmar_exclusao.html", {'gasto_excluir': gasto_objeto})
+# 4. View para Abortar Compra por Impulso
+def abortar_compra_view(request, id):
+    gasto = get_object_or_404(RegistroGasto, id=id)
+    gasto.estado = 'DESISTIDO'
+    gasto.save()
+    return redirect('painel')
 
-@login_required  # Dia 34: Gestão e Cadastro de Operadores
-def view_registrar_operador(request: HttpRequest) -> HttpResponse:
+# 5. View para Cadastrar Operadores (Resolve o ImportError)
+def registrar_operador_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            novo_usuario = form.save()
-            messages.success(request, f"Novo operador '{novo_usuario.username}' cadastrado com sucesso!")
+            user = form.save()
+            login(request, user)
             return redirect('painel')
     else:
         form = UserCreationForm()
+    return render(request, 'main/registrar_operador.html', {'form': form})
 
-    return render(request, "main/registro_operador.html", {'form_cadastro': form})
-
-# ─── 2. ROTAS DE API REST (JSON COM UTF-8) ───
-
-def api_lista_gastos(request: HttpRequest) -> JsonResponse:  # Dia 37: Coleção Geral
-    gastos = RegistroGasto.objects.all().order_by('-id')
-    dados_api = []
-    for g in gastos:
-        dados_api.append({
-            "id": g.id,
-            "descricao": g.descricao,
-            "valor": float(g.valor),
-            "categoria": g.categoria.nome if g.categoria else None,
-            "is_impulsivo": g.is_impulsivo
-        })
-    return JsonResponse(dados_api, safe=False, json_dumps_params={'ensure_ascii': False})
-
-def api_detalhe_gasto(request: HttpRequest, pk: int) -> JsonResponse:  # Dia 37: Registro Individual & Erro 404
-    try:
-        gasto = RegistroGasto.objects.get(id=pk)
-        payload = {
-            "id": gasto.id,
-            "descricao": gasto.descricao,
-            "valor": float(gasto.valor),
-            "categoria": gasto.categoria.nome if gasto.categoria else None,
-            "is_impulsivo": gasto.is_impulsivo,
-            "data": gasto.data.isoformat()
-        }
-        return JsonResponse(payload, json_dumps_params={'ensure_ascii': False})
-    except RegistroGasto.DoesNotExist:
-        return JsonResponse(
-            {"erro": f"Lançamento #{pk} não consta no banco de dados."}, 
-            status=404, 
-            json_dumps_params={'ensure_ascii': False}
-        )
+# 6. Endpoint de API JSON (Semana 9)
+def api_gastos_view(request):
+    gastos = RegistroGasto.objects.all().values('id', 'descricao', 'valor', 'categoria', 'impulso', 'estado')
+    return JsonResponse(list(gastos), safe=False)

@@ -1,6 +1,21 @@
+from django.contrib import admin
 from django.urls import path
-from . import views
+from main.views import (
+    painel_view, 
+    excluir_gasto_view, 
+    editar_gasto_view, 
+    abortar_compra_view,
+    api_gastos_view
+)
 
 urlpatterns = [
-    path('', views.painel_financeiro, name='painel_financeiro'),
+    path('admin/', admin.site.urls),
+    path('', painel_view, name='home'),
+    path('painel/', painel_view, name='painel'),
+    path('excluir/<int:id>/', excluir_gasto_view, name='excluir_gasto'),
+    path('editar/<int:id>/', editar_gasto_view, name='editar_gasto'),
+    path('abortar/<int:id>/', abortar_compra_view, name='abortar_compra'),
+    
+    # Rota da API da Semana 9
+    path('api/gastos/', api_gastos_view, name='api_gastos'),
 ]

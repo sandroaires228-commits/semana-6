@@ -1,115 +1,53 @@
-{% extends 'main/base.html' %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Geladeira de Compras — Dominus System{% endblock %}</title>
 
-{% block titulo %}Dashboard Neon — Dominus System{% endblock %}
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-{% block conteudo %}
-<div class="row g-4">
-    <!-- FORMULÁRIO DE LANÇAMENTO -->
-    <div class="col-lg-4">
-        <div class="bg-dominus-card p-4">
-            <div class="border-bottom border-secondary pb-3 mb-3">
-                <h5 class="fw-bold text-white mb-0">⚡ Novo Lançamento</h5>
-                <small class="text-muted">Atrito Anti-Impulso em Tempo Real</small>
-            </div>
+    <style>
+        body { background-color: #080c14; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; }
+        .bg-dominus-card { background: #111827; border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 12px; }
+        input[type="text"], input[type="number"], select { background-color: #1f2937 !important; border: 1px solid #374151 !important; color: #ffffff !important; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Navbar Responsiva com Hambúrguer (Semana 8) -->
+    <nav class="navbar navbar-expand-lg navbar-dark border-bottom border-secondary border-opacity-25 py-2 mb-4" style="background-color: #0e1420;">
+        <div class="container-fluid px-4">
             
-            <form method="post" novalidate>
-                {% csrf_token %}
+            <a href="{% url 'painel' %}" class="navbar-brand d-flex align-items-center gap-2 fw-bold">
+                <span class="fs-4">🧊</span> DOMINUS <span class="text-success">SYS</span>
+            </a>
 
-                <div class="mb-3">
-                    <label for="{{ form.descricao.id_for_label }}" class="form-label small fw-bold text-info">Descrição</label>
-                    {{ form.descricao }}
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMobile" aria-controls="navbarMobile" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarMobile">
+                <div class="ms-auto d-flex flex-column flex-lg-row align-items-lg-center gap-2 mt-2 mt-lg-0">
+                    <a href="{% url 'registrar_operador' %}" class="btn btn-outline-info btn-sm font-monospace">+ Registrar Operador</a>
+                    <a href="{% url 'admin:logout' %}" class="btn btn-outline-danger btn-sm">Sair</a>
                 </div>
-
-                <div class="mb-3">
-                    <label for="{{ form.valor.id_for_label }}" class="form-label small fw-bold text-info">Valor (R$)</label>
-                    {{ form.valor }}
-                </div>
-
-                <div class="mb-3">
-                    <label for="{{ form.categoria.id_for_label }}" class="form-label small fw-bold text-info">Categoria</label>
-                    {{ form.categoria }}
-                </div>
-
-                <div class="mb-4 p-3 rounded-3 border border-danger bg-dark">
-                    <div class="form-check">
-                        {{ form.is_impulsivo }}
-                        <label class="form-check-label small fw-bold text-danger ms-2" for="{{ form.is_impulsivo.id_for_label }}">
-                            🚨 Compra por Impulso
-                        </label>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-neon-primary w-100 py-3 text-uppercase fs-6">
-                    💾 Registrar Transação
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- TABELA DE AUDITORIA -->
-    <div class="col-lg-8">
-        <div class="bg-dominus-card p-4">
-            <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-3">
-                <div>
-                    <h5 class="fw-bold text-white mb-0">📊 Painel de Auditoria</h5>
-                    <small class="text-muted">Mapeamento de Gastos Racionais vs. Impulsivos</small>
-                </div>
-                <span class="badge bg-dark border border-cyan text-info px-3 py-2 fw-bold fs-6">
-                    Total: {{ total_registros }}
-                </span>
             </div>
 
-            <div class="table-responsive">
-                <table class="table table-dark table-hover align-middle mb-0 bg-transparent">
-                    <thead class="text-muted small text-uppercase">
-                        <tr>
-                            <th scope="col" class="ps-3">#ID</th>
-                            <th scope="col">Descrição</th>
-                            <th scope="col">Categoria</th>
-                            <th scope="col">Valor</th>
-                            <th scope="col" class="text-center">Atrito</th>
-                            <th scope="col" class="text-center">Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for g in lista_gastos %}
-                            <tr>
-                                <td class="ps-3 fw-bold text-secondary">#{{ g.id }}</td>
-                                <td class="fw-bold text-white">{{ g.descricao }}</td>
-                                <td>
-                                    <span class="badge bg-dark text-light border border-secondary px-2 py-1">
-                                        {{ g.categoria.nome|default:"Geral" }}
-                                    </span>
-                                </td>
-                                <td class="fw-extrabold text-info">R$ {{ g.valor }}</td>
-                                <td class="text-center">
-                                    {% if g.is_impulsivo %}
-                                        <span class="badge badge-impulso-neon px-3 py-2 rounded-pill">
-                                            🔥 IMPULSO
-                                        </span>
-                                    {% else %}
-                                        <span class="badge badge-planejado-neon px-3 py-2 rounded-pill">
-                                            ⚡ PLANEJADO
-                                        </span>
-                                    {% endif %}
-                                </td>
-                                <td class="text-center">
-                                    <a href="{% url 'excluir_gasto' g.id %}" class="btn btn-outline-danger btn-sm fw-bold border-0">
-                                        🗑️
-                                    </a>
-                                </td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="6" class="text-center text-muted py-5">
-                                    Nenhum registro no banco de dados.
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
         </div>
-    </div>
-</div>
-{% endblock %}
+    </nav>
+
+    <main class="container-fluid px-4 flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="text-center py-3 border-top border-secondary border-opacity-10 mt-auto text-muted small">
+        &copy; 2026 <strong>Geladeira de Compras</strong> — Módulo Web & APIs | SENAI Piauí
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

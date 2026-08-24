@@ -1,30 +1,21 @@
-# core/urls.py
 from django.contrib import admin
 from django.urls import path
-from django.shortcuts import redirect
-from django.contrib.auth import views as auth_views
 from main.views import (
-    painel_financeiro,
-    view_excluir_gasto,
-    view_registrar_operador,
-    api_lista_gastos,
-    api_detalhe_gasto
+    painel_view, 
+    excluir_gasto_view, 
+    editar_gasto_view, 
+    abortar_compra_view,
+    registrar_operador_view,
+    api_gastos_view
 )
 
 urlpatterns = [
-    # Redireciona a raiz "/" para "/painel/"
-    path('', lambda request: redirect('painel')),
-
     path('admin/', admin.site.urls),
-    path('painel/', painel_financeiro, name='painel'),
-    path('excluir/<int:pk>/', view_excluir_gasto, name='excluir_gasto'),
-    path('registrar-operador/', view_registrar_operador, name='registrar_operador'),
-
-    # APIs REST
-    path('api/gastos/', api_lista_gastos, name='api_lista_gastos'),
-    path('api/gastos/<int:pk>/', api_detalhe_gasto, name='api_detalhe_gasto'),
-
-    # Autenticação
-    path('login/', auth_views.LoginView.as_view(template_name='main/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
+    path('', painel_view, name='home'),
+    path('painel/', painel_view, name='painel'),
+    path('excluir/<int:id>/', excluir_gasto_view, name='excluir_gasto'),
+    path('editar/<int:id>/', editar_gasto_view, name='editar_gasto'),
+    path('abortar/<int:id>/', abortar_compra_view, name='abortar_compra'),
+    path('registrar-operador/', registrar_operador_view, name='registrar_operador'),
+    path('api/gastos/', api_gastos_view, name='api_gastos'),
 ]
