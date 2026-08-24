@@ -1,12 +1,13 @@
+import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.db.models import Sum
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from django.views.decorators.csrf import csrf_exempt
 from .models import RegistroGasto
 from .forms import RegistroGastoForm
 
-# 1. View Principal do Painel
 def painel_view(request):
     if request.method == 'POST':
         form = RegistroGastoForm(request.POST)
@@ -30,13 +31,11 @@ def painel_view(request):
     }
     return render(request, 'main/painel.html', context)
 
-# 2. View para Excluir Registro
 def excluir_gasto_view(request, id):
     gasto = get_object_or_404(RegistroGasto, id=id)
     gasto.delete()
     return redirect('painel')
 
-# 3. View para Editar Registro
 def editar_gasto_view(request, id):
     gasto = get_object_or_404(RegistroGasto, id=id)
     if request.method == 'POST':
@@ -48,14 +47,12 @@ def editar_gasto_view(request, id):
         form = RegistroGastoForm(instance=gasto)
     return render(request, 'main/editar_gasto.html', {'form': form, 'gasto': gasto})
 
-# 4. View para Abortar Compra por Impulso
 def abortar_compra_view(request, id):
     gasto = get_object_or_404(RegistroGasto, id=id)
     gasto.estado = 'DESISTIDO'
     gasto.save()
     return redirect('painel')
 
-# 5. View para Cadastrar Operadores (Resolve o ImportError)
 def registrar_operador_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -65,9 +62,26 @@ def registrar_operador_view(request):
             return redirect('painel')
     else:
         form = UserCreationForm()
-    return render(request, 'main/registrar_operador.html', {'form': form})
+    return render(request, 'main/registro_operador.html', {'form': form})
 
-# 6. Endpoint de API JSON (Semana 9)
+@csrf_exempt
 def api_gastos_view(request):
-    gastos = RegistroGasto.objects.all().values('id', 'descricao', 'valor', 'categoria', 'impulso', 'estado')
-    return JsonResponse(list(gastos), safe=False)
+    if request.method == 'GET':
+        gastos = RegistroGasto.objects.all().values('id', 'descricao', 'valor', 'categoria', 'impulso', 'estado')
+        return JsonResponse(list(gastos), safe=False)
+
+    elif request.method == 'POST':
+        try:
+            dados = json.loads(request.body)
+            novo_gasto = RegistroGasto.objects.create(
+                descricao=dados.get('descricao'),
+                valor=dados.get('valor'),
+                categoria=dados.get('categoria', 'outros'),
+                impulso=dados.get('impulso', False),
+                estado='CONGELADO' if dados.get('impulso') else 'PLANEJADO'
+            )
+            return JsonResponse({'mensagem': 'Registro criado com sucesso!', 'id': novo_gasto.id}, status=201)
+        except Exception as e:
+            return JsonResponse({'erro': str(e)}, status=400)
+
+    return JsonResponse({'erro': 'Método não permitido.'}, status=405)

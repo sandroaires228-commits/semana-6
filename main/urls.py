@@ -1,10 +1,12 @@
 from django.contrib import admin
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from main.views import (
-    painel_view, 
-    excluir_gasto_view, 
-    editar_gasto_view, 
+    painel_view,
+    excluir_gasto_view,
+    editar_gasto_view,
     abortar_compra_view,
+    registrar_operador_view,
     api_gastos_view
 )
 
@@ -15,7 +17,9 @@ urlpatterns = [
     path('excluir/<int:id>/', excluir_gasto_view, name='excluir_gasto'),
     path('editar/<int:id>/', editar_gasto_view, name='editar_gasto'),
     path('abortar/<int:id>/', abortar_compra_view, name='abortar_compra'),
-    
-    # Rota da API da Semana 9
+    path('registrar-operador/', registrar_operador_view, name='registrar_operador'),
     path('api/gastos/', api_gastos_view, name='api_gastos'),
+    
+    # Rota de Logout oficial do Django
+    path('logout/', auth_views.LogoutView.as_view(next_page='painel'), name='logout'),
 ]
