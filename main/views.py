@@ -4,10 +4,12 @@ from django.http import JsonResponse
 from django.db.models import Sum
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from .models import RegistroGasto
 from .forms import RegistroGastoForm
 
+@login_required(login_url='/admin/login/?next=/painel/')
 def painel_view(request):
     if request.method == 'POST':
         form = RegistroGastoForm(request.POST)

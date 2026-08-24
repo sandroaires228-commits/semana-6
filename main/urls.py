@@ -20,6 +20,6 @@ urlpatterns = [
     path('registrar-operador/', registrar_operador_view, name='registrar_operador'),
     path('api/gastos/', api_gastos_view, name='api_gastos'),
     
-    # Rota de Logout oficial do Django
+    # Redireciona explicitamente para 'painel' após o logout
     path('logout/', auth_views.LogoutView.as_view(next_page='painel'), name='logout'),
 ]
