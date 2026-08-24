@@ -19,6 +19,7 @@ class RegistroGasto(models.Model):
     valor = models.DecimalField(max_digits=10, decimal_places=2)
     categoria = models.CharField(max_length=20, choices=CATEGORIAS, default='outros')
     impulso = models.BooleanField(default=False)
+    dias_reflexao = models.IntegerField(default=7)  # Atribui valor padrão de 7 dias
     estado = models.CharField(max_length=15, choices=ESTADOS, default='PLANEJADO')
     data_criacao = models.DateTimeField(auto_now_add=True)
 
