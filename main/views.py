@@ -12,7 +12,6 @@ from .forms import RegistroGastoForm
 
 @login_required(login_url='/admin/login/?next=/painel/')
 def painel_view(request):
-    """View principal do painel financeiro DOMINUS SYS."""
     if request.method == 'POST':
         form = RegistroGastoForm(request.POST)
         if form.is_valid():
@@ -36,8 +35,22 @@ def painel_view(request):
     return render(request, 'main/painel.html', context)
 
 
+@login_required(login_url='/admin/login/?next=/painel/')
+def abortar_compra_view(request, pk):
+    gasto = get_object_or_404(RegistroGasto, pk=pk)
+    gasto.estado = 'DESISTIDO'
+    gasto.save()
+    return redirect('painel')
+
+
+@login_required(login_url='/admin/login/?next=/painel/')
+def excluir_gasto_view(request, pk):
+    gasto = get_object_or_404(RegistroGasto, pk=pk)
+    gasto.delete()
+    return redirect('painel')
+
+
 def registrar_operador_view(request):
-    """View para cadastro de novos operadores/usuários no sistema."""
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -51,7 +64,6 @@ def registrar_operador_view(request):
 
 @csrf_exempt
 def api_gastos_view(request):
-    """Endpoint API REST da Semana 9 para consumo/envio em JSON."""
     if request.method == 'GET':
         gastos = RegistroGasto.objects.all().values('id', 'descricao', 'valor', 'categoria', 'impulso', 'estado')
         return JsonResponse(list(gastos), safe=False)
@@ -66,7 +78,7 @@ def api_gastos_view(request):
                 impulso=dados.get('impulso', False),
                 estado='CONGELADO' if dados.get('impulso') else 'PLANEJADO'
             )
-            return JsonResponse({'mensagem': 'Registro criado com sucesso via API!', 'id': novo_gasto.id}, status=201)
+            return JsonResponse({'mensagem': 'Registro criado via API!', 'id': novo_gasto.id}, status=201)
         except Exception as e:
             return JsonResponse({'erro': str(e)}, status=400)
 
