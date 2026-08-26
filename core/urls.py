@@ -1,19 +1,9 @@
-from django.urls import path
-from main import views
+from django.contrib import admin
+from django.urls import path, include
+from django.shortcuts import redirect
 
 urlpatterns = [
-    # Dashboard
-    path('painel/', views.painel, name='painel'),
-    
-    # Atualização, Exclusão e Ações
-    path('editar/<int:id>/', views.editar_gasto, name='editar_gasto'),
-    path('abortar/<int:id>/', views.abortar, name='abortar'),
-    path('excluir/<int:id>/', views.excluir, name='excluir'),
-    
-    # Autenticação e Operador
-    path('registrar-operador/', views.registrar_operador, name='registrar_operador'),
-    path('logout/', views.fazer_logout, name='logout'),
-    
-    # API REST
-    path('api/gastos/', views.api_gastos, name='api_gastos'),
+    path('admin/', admin.site.urls),
+    path('', lambda request: redirect('login')),  # Redireciona a rota raiz para a tela de login
+    path('', include('main.urls')),
 ]

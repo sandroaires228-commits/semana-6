@@ -3,320 +3,270 @@
 
 {% block content %}
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
     :root {
-        --bg-main: #060D19;
-        --bg-card: #0D172A;
-        --bg-card-hover: #132038;
-        --border-glass: rgba(255, 255, 255, 0.08);
-        
-        --brand-sky: #00B4D8;
-        --brand-sky-light: #00C4EE;
-        --brand-sky-glow: rgba(0, 180, 216, 0.25);
-        
-        --text-white: #FFFFFF;
-        --text-sub: #94A3B8;
-        --radius-lg: 16px;
-        --radius-md: 12px;
-        --radius-sm: 8px;
+        --pi-bg-dark: #060D19;
+        --pi-card-bg: #0D172A;
+        --pi-border-glass: rgba(255, 255, 255, 0.12);
+        --pi-sky-primary: #00B4D8;
+        --pi-sky-hover: #00C4EE;
+        --pi-sky-glow: rgba(0, 180, 216, 0.25);
+        --pi-text-main: #FFFFFF;
+        --pi-text-muted: #94A3B8;
     }
 
-    body {
-        background-color: var(--bg-main) !important;
-        color: var(--text-white);
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    .panel-container {
+        padding: 0 1.5rem 2rem 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
     }
 
-    .pi-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-glass);
-        border-radius: var(--radius-lg);
-        padding: 1.25rem;
+    .card-pi {
+        background-color: var(--pi-card-bg);
+        border: 1px solid var(--pi-border-glass);
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
-    .kpi-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-glass);
-        border-radius: var(--radius-lg);
-        padding: 1.25rem;
-        position: relative;
+    .metric-card {
+        background-color: var(--pi-card-bg);
+        border: 1px solid var(--pi-border-glass);
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        transition: transform 0.2s ease, border-color 0.2s ease;
     }
 
-    .kpi-icon-square {
-        width: 42px;
-        height: 42px;
-        border-radius: var(--radius-md);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
+    .metric-card:hover {
+        border-color: rgba(0, 180, 216, 0.4);
     }
 
-    .geladeira-item-box {
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid var(--border-glass);
-        border-radius: var(--radius-md);
-        padding: 0.85rem 1rem;
-        margin-bottom: 0.75rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .geladeira-thumb {
-        width: 48px;
-        height: 48px;
-        border-radius: var(--radius-md);
-        background: rgba(255, 255, 255, 0.05);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        margin-right: 0.85rem;
-    }
-
-    .badge-chip {
-        padding: 0.35em 0.75em;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 0.72rem;
-    }
-
-    .badge-necessario { background: rgba(16, 185, 129, 0.15); color: #10B981; }
-    .badge-evitavel { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
-
-    .cat-pill {
-        padding: 0.25em 0.65em;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        background: rgba(255, 255, 255, 0.05);
-        color: var(--text-sub);
-    }
-
-    .table-pi {
-        color: #FFF;
-        --bs-table-bg: transparent;
-        font-size: 0.875rem;
-    }
-
-    .table-pi th {
-        color: var(--text-sub);
-        font-size: 0.72rem;
+    .metric-label {
+        color: var(--pi-text-muted);
+        font-size: 0.78rem;
         font-weight: 600;
         text-transform: uppercase;
-        border-bottom: 1px solid var(--border-glass);
-        padding: 0.85rem 0.5rem;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
     }
 
-    .table-pi td {
-        padding: 0.85rem 0.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-        vertical-align: middle;
+    .metric-value {
+        color: var(--pi-text-main);
+        font-size: 1.65rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
     }
 
     .form-control-pi, .form-select-pi {
         background-color: #060D19 !important;
-        border: 1px solid var(--border-glass) !important;
+        border: 1px solid var(--pi-border-glass) !important;
         color: #FFF !important;
-        border-radius: var(--radius-md);
+        border-radius: 8px;
+        font-size: 0.9rem;
         padding: 0.65rem 0.85rem;
-        font-size: 0.875rem;
     }
 
     .form-control-pi:focus, .form-select-pi:focus {
-        border-color: var(--brand-sky) !important;
-        box-shadow: 0 0 0 3px var(--brand-sky-glow) !important;
+        border-color: var(--pi-sky-primary) !important;
+        box-shadow: 0 0 0 3px var(--pi-sky-glow) !important;
     }
 
-    .btn-sky {
-        background-color: var(--brand-sky);
-        color: #060D19;
+    .btn-pi-action {
+        background-color: var(--pi-sky-primary);
+        color: #060D19 !important;
         font-weight: 700;
         border: none;
-        transition: all 0.2s ease;
+        border-radius: 8px;
+        padding: 0.7rem 1.25rem;
+        transition: all 0.2s ease-in-out;
     }
 
-    .btn-sky:hover {
-        background-color: var(--brand-sky-light);
-        color: #060D19;
+    .btn-pi-action:hover {
+        background-color: var(--pi-sky-hover);
+        box-shadow: 0 0 15px var(--pi-sky-glow);
     }
 
-    .btn-outline-sky {
-        border: 1px solid var(--brand-sky);
-        color: var(--brand-sky);
-        background: transparent;
+    .geladeira-sidebar {
+        background-color: var(--pi-card-bg);
+        border: 1px solid var(--pi-border-glass);
+        border-radius: 12px;
+        padding: 1.25rem;
     }
 
-    .text-sky { color: var(--brand-sky) !important; }
+    .geladeira-item {
+        background: rgba(6, 13, 25, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 0.85rem 1rem;
+        margin-bottom: 0.75rem;
+        transition: border-color 0.2s ease;
+    }
 
-    .donut-wrapper { position: relative; width: 150px; height: 150px; }
-    .donut-center-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
-    .legend-indicator { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+    .geladeira-item:hover {
+        border-color: rgba(0, 180, 216, 0.3);
+    }
 </style>
 
-<div class="container-fluid py-3 px-lg-4">
-    <!-- CABEÇALHO SUPERIOR -->
-    <div class="d-flex align-items-center justify-content-between mb-4">
+<div class="panel-container">
+
+    <!-- CABEÇALHO DO PAINEL REFINADO COM ALTA VISIBILIDADE (WCAG AA) -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
-            <h3 class="fw-bold mb-1 d-flex align-items-center">Olá, Sandro! 👋</h3>
-            <p class="text-muted mb-0 small">Aqui está o resumo da sua saúde financeira.</p>
+            <h1 class="fw-bold text-white mb-1" style="font-size: 1.75rem; letter-spacing: -0.02em;">
+                PI.ISO System — <span class="text-sky fw-normal" style="opacity: 0.9;">Controle Financeiro</span>
+            </h1>
+            <p class="mb-0" style="color: #E2E8F0; font-size: 0.95rem; font-weight: 500; letter-spacing: 0.01em;">
+                Transformando impulsos em decisões mais <span style="color: #00B4D8; font-weight: 700; text-shadow: 0 0 10px rgba(0, 180, 216, 0.3);">conscientes</span>
+            </p>
         </div>
-        <div class="d-flex align-items-center gap-3">
-            <span class="badge bg-dark border text-white-50 px-3 py-2 fw-normal" style="border-radius: 8px;">📅 Maio / 2025 ▾</span>
-            <div class="position-relative">
-                <span class="fs-5 text-white-50">🔔</span>
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger" style="font-size: 0.6rem; padding: 0.35em 0.5em;">3</span>
-            </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <a href="#" class="btn btn-outline-sky btn-sm fw-bold px-3 py-2">+ Novo Gasto</a>
+            <a href="#" class="btn btn-outline-sky btn-sm fw-bold px-3 py-2">+ Nova Meta</a>
+            <button class="btn btn-outline-sky btn-sm fw-bold px-3 py-2">🧊 Geladeira ({{ gastos_geladeira.count }})</button>
         </div>
     </div>
 
-    <!-- CARDS DE KPI -->
+    <!-- ALERTAS DO SISTEMA -->
+    {% if alertas %}
+        <div class="mb-4">
+            {% for alerta in alertas %}
+                <div class="alert alert-warning py-2 px-3 small border-0 mb-2 d-flex align-items-center justify-content-between" style="background-color: rgba(245, 158, 11, 0.15); color: #FCD34D; border-left: 3px solid #F59E0B !important; border-radius: 8px;">
+                    <span>💡 {{ alerta }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- MÉTRICAS SUPERIORES -->
     <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="kpi-card">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <div class="kpi-icon-square text-sky" style="background: rgba(0, 180, 216, 0.15);">👛</div>
-                    <span class="text-white-50 small">⋮</span>
-                </div>
-                <span class="text-muted small fw-medium d-block">Saldo disponível</span>
-                <h4 class="fw-bold mb-1">R$ 1.550,10</h4>
-                <small class="text-muted" style="font-size: 0.75rem;">de R$ 2.800,00</small>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="metric-card">
+                <div class="metric-label">Saldo Disponível</div>
+                <div class="metric-value text-sky">R$ {{ saldo_disponivel|floatformat:2 }}</div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="kpi-card">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <div class="kpi-icon-square bg-success bg-opacity-20 text-success">📈</div>
-                    <span class="text-white-50 small">⋮</span>
-                </div>
-                <span class="text-muted small fw-medium d-block">Receitas</span>
-                <h4 class="fw-bold mb-1 text-success">R$ 2.800,00</h4>
-                <small class="text-muted" style="font-size: 0.75rem;">Este mês</small>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="metric-card">
+                <div class="metric-label">Entradas do Mês</div>
+                <div class="metric-value" style="color: #10B981;">R$ {{ total_entradas|floatformat:2 }}</div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="kpi-card">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <div class="kpi-icon-square bg-danger bg-opacity-20 text-danger">📉</div>
-                    <span class="text-white-50 small">⋮</span>
-                </div>
-                <span class="text-muted small fw-medium d-block">Despesas</span>
-                <h4 class="fw-bold mb-1 text-danger">R$ 1.249,90</h4>
-                <small class="text-muted" style="font-size: 0.75rem;">Este mês</small>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="metric-card">
+                <div class="metric-label">Total de Gastos</div>
+                <div class="metric-value" style="color: #EF4444;">R$ {{ total_gastos|floatformat:2 }}</div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="kpi-card">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <div class="kpi-icon-square style-purple text-white" style="background: rgba(139, 92, 246, 0.2); color: #8B5CF6;">🐷</div>
-                    <span class="text-white-50 small">⋮</span>
-                </div>
-                <span class="text-muted small fw-medium d-block">Economia potencial</span>
-                <h4 class="fw-bold mb-1 text-sky" id="card-economia-potencial">R$ {{ economia_potencial|default:"320,00" }}</h4>
-                <small class="text-muted" style="font-size: 0.75rem;">Em compras desistidas</small>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="metric-card">
+                <div class="metric-label">Economia Potencial</div>
+                <div class="metric-value" style="color: #00B4D8;">R$ {{ economia_potencial|floatformat:2 }}</div>
+                <small class="text-muted" style="font-size: 0.7rem;">Gasto evitado na Geladeira</small>
             </div>
         </div>
     </div>
 
-    <!-- PAINEL PRINCIPAL -->
-    <div class="row g-4 mb-4">
-        <!-- COLUNA ESQUERDA -->
-        <div class="col-lg-8">
-            <!-- BARRA DE ORÇAMENTO -->
-            <div class="pi-card mb-4">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <h6 class="fw-bold mb-0">Orçamento mensal</h6>
-                    <span class="badge text-sky border px-3 py-1 fw-normal" style="background: rgba(0, 180, 216, 0.12); border-color: rgba(0, 180, 216, 0.3) !important; border-radius: 20px;">58% utilizado</span>
-                </div>
-                <div class="mb-3">
-                    <small class="text-muted d-block" style="font-size: 0.75rem;">Limite definido</small>
-                    <h5 class="fw-bold mb-0">R$ 2.800,00</h5>
-                </div>
-                <div class="progress mb-2" style="height: 10px; background: rgba(255,255,255,0.08); border-radius: 10px;">
-                    <div class="progress-bar" role="progressbar" style="width: 58%; background-color: var(--brand-sky); border-radius: 10px;"></div>
-                </div>
-                <div class="d-flex justify-content-between small">
-                    <span class="text-success fw-medium">R$ 1.249,90 <span class="text-muted fw-normal">utilizados</span></span>
-                    <span class="text-sky fw-medium">R$ 1.550,10 <span class="text-muted fw-normal">disponíveis</span></span>
-                </div>
+    <!-- SAÚDE FINANCEIRA E ORÇAMENTO -->
+    <div class="card-pi p-3 mb-4 d-flex flex-row justify-content-between align-items-center">
+        <div>
+            <span class="text-muted small text-uppercase fw-bold tracking-wide">Saúde Financeira</span>
+            <div class="fs-5 fw-bold mt-1" style="color: {{ saude_financeira.cor }};">
+                {{ saude_financeira.icone }} {{ saude_financeira.status }}
             </div>
+        </div>
+        <div class="text-end">
+            <span class="text-muted small text-uppercase fw-bold tracking-wide">Uso do Orçamento</span>
+            <div class="fs-5 fw-bold text-sky mt-1">
+                {{ pct_orcamento }}%
+            </div>
+        </div>
+    </div>
 
-            <!-- FORMULÁRIO DE CADASTRO DE PRODUTO -->
-            <div class="pi-card mb-4">
-                <h6 class="fw-bold mb-3">Cadastrar Produto / Novo Gasto</h6>
-                <form method="POST" action="{% url 'painel' %}" class="row g-3 mb-3">
+    <!-- GRID PRINCIPAL: LANÇAMENTO E GELADEIRA -->
+    <div class="row g-4">
+        
+        <!-- COLUNA ESQUERDA: FORMULÁRIO E LISTAGEM -->
+        <div class="col-12 col-lg-8">
+            <div class="card-pi p-4 mb-4">
+                <h5 class="fw-bold text-white mb-3" style="font-size: 1.1rem;">Lançar Novo Gasto / Intenção de Compra</h5>
+                
+                <form method="POST" class="row g-3">
                     {% csrf_token %}
-                    <div class="col-md-5">
-                        <label class="form-label text-muted small fw-medium">NOME DO PRODUTO</label>
-                        <input type="text" name="descricao" class="form-control form-control-pi" placeholder="Ex: Smartwatch, Almoço..." required>
+                    <div class="col-12 col-md-5">
+                        <label class="form-label text-muted small fw-bold">DESCRIÇÃO</label>
+                        <input type="text" name="descricao" class="form-control form-control-pi" placeholder="Ex: Tênis Novo" required>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label text-muted small fw-medium">VALOR (R$)</label>
-                        <input type="number" step="0.01" min="0.01" name="valor" class="form-control form-control-pi" placeholder="0.00" required>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label text-muted small fw-bold">VALOR (R$)</label>
+                        <input type="number" step="0.01" name="valor" class="form-control form-control-pi" placeholder="0.00" required>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label text-muted small fw-medium">CATEGORIA</label>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label text-muted small fw-bold">CATEGORIA</label>
                         <select name="categoria" class="form-select form-select-pi">
                             <option value="Alimentação">Alimentação</option>
-                            <option value="Eletrônicos">Eletrônicos</option>
                             <option value="Transporte">Transporte</option>
                             <option value="Lazer">Lazer</option>
-                            <option value="Compras">Compras</option>
+                            <option value="Tecnologia">Tecnologia</option>
+                            <option value="Outros">Outros</option>
                         </select>
                     </div>
-                    <div class="col-12 d-flex align-items-center justify-content-between pt-2">
-                        <div class="form-check m-0">
-                            <input class="form-check-input" type="checkbox" name="impulso" id="impulsoCheck" style="cursor: pointer;">
-                            <label class="form-check-label text-warning small fw-medium" for="impulsoCheck" style="cursor: pointer;">
-                                ❄️ Enviar para Geladeira de Compras
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label text-muted small fw-bold">PRIORIDADE</label>
+                        <select name="prioridade" class="form-select form-select-pi">
+                            <option value="IMPORTANTE">Importante / Essencial</option>
+                            <option value="FUTURÍSTICO">Futurístico / Desejável</option>
+                            <option value="IMPULSIVO">Impulsivo / Sob Reflexão</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-6 d-flex align-items-center pt-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="impulso" id="checkImpulso" style="background-color: #060D19; border-color: rgba(255,255,255,0.3);">
+                            <label class="form-check-label text-sky small fw-bold" for="checkImpulso">
+                                ❄️ Enviar direto para a Geladeira de Compras
                             </label>
                         </div>
-                        <button type="submit" class="btn btn-sky px-4 fw-bold" style="border-radius: var(--radius-md);">CADASTRAR PRODUTO</button>
+                    </div>
+
+                    <div class="col-12 mt-3">
+                        <button type="submit" class="btn btn-pi-action w-100 fw-bold">CADASTRAR LANÇAMENTO</button>
                     </div>
                 </form>
             </div>
 
-            <!-- TABELA DE PRODUTOS -->
-            <div class="pi-card">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="fw-bold mb-0">Produtos e Gastos Lançados</h6>
-                    <span class="text-sky small">Sincronização Ativa</span>
-                </div>
-
+            <!-- TABELA DE GASTOS -->
+            <div class="card-pi p-4">
+                <h5 class="fw-bold text-white mb-3" style="font-size: 1.1rem;">Histórico de Transações</h5>
+                
                 <div class="table-responsive">
-                    <table class="table table-pi align-middle mb-0">
+                    <table class="table table-dark table-hover align-middle mb-0" style="background: transparent; font-size: 0.9rem;">
                         <thead>
-                            <tr>
-                                <th>PRODUTO / DESCRIÇÃO</th>
-                                <th>CATEGORIA</th>
-                                <th>VALOR</th>
-                                <th>STATUS</th>
-                                <th class="text-end">AÇÕES</th>
+                            <tr style="border-bottom: 2px solid var(--pi-border-glass); color: var(--pi-text-muted);">
+                                <th class="py-3">Descrição</th>
+                                <th class="py-3">Valor</th>
+                                <th class="py-3">Categoria</th>
+                                <th class="py-3">Estado</th>
+                                <th class="py-3 text-end">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="tabela-gastos-body">
-                            {% for gasto in gastos %}
+                        <tbody>
+                            {% for g in gastos %}
                             <tr>
-                                <td class="fw-bold">{{ gasto.descricao }}</td>
-                                <td><span class="cat-pill">{{ gasto.categoria|default:"Geral" }}</span></td>
-                                <td class="fw-bold text-danger">R$ {{ gasto.valor }}</td>
-                                <td>
-                                    {% if gasto.estado == 'CONGELADO' or gasto.impulso %}
-                                        <span class="badge-chip badge-evitavel">Geladeira</span>
-                                    {% else %}
-                                        <span class="badge-chip badge-necessario">Ativo</span>
-                                    {% endif %}
+                                <td class="fw-bold py-3">{{ g.descricao }}</td>
+                                <td class="py-3 text-sky">R$ {{ g.valor|floatformat:2 }}</td>
+                                <td class="py-3 text-muted">{{ g.categoria }}</td>
+                                <td class="py-3">
+                                    <span class="badge bg-secondary bg-opacity-25 text-{{ g.estado|lower }}">
+                                        {{ g.estado }}
+                                    </span>
                                 </td>
-                                <td class="text-end">
-                                    <button class="btn btn-sm btn-outline-info py-0 px-2 me-1" onclick="abrirModalEdicao('{{ gasto.id }}', '{{ gasto.descricao }}', '{{ gasto.valor }}', '{{ gasto.categoria }}')">✏️ Editar</button>
-                                    <a href="{% url 'excluir' gasto.id %}" class="btn btn-sm btn-outline-danger py-0 px-2">🗑️</a>
+                                <td class="py-3 text-end">
+                                    <a href="{% url 'excluir' g.id %}" class="btn btn-outline-danger btn-sm py-0 px-2" title="Excluir">🗑️</a>
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="5" class="text-center text-muted py-4">Nenhum produto cadastrado.</td>
+                                <td colspan="5" class="text-center py-4 text-muted">Nenhum gasto registrado no momento.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -325,188 +275,40 @@
             </div>
         </div>
 
-        <!-- COLUNA DIREITA -->
-        <div class="col-lg-4">
-            <!-- GRÁFICO DONUT -->
-            <div class="pi-card mb-4">
-                <h6 class="fw-bold mb-3">Gastos por categoria</h6>
-                <div class="d-flex align-items-center gap-3">
-                    <div class="donut-wrapper">
-                        <svg viewBox="0 0 36 36" class="w-100 h-100">
-                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#10B981" stroke-width="4" stroke-dasharray="35, 100" />
-                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#00B4D8" stroke-width="4" stroke-dasharray="20, 100" stroke-dashoffset="-35" />
-                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#8B5CF6" stroke-width="4" stroke-dasharray="15, 100" stroke-dashoffset="-55" />
-                        </svg>
-                        <div class="donut-center-text">
-                            <small class="d-block text-muted" style="font-size: 0.65rem;">Total</small>
-                            <strong class="small d-block fw-bold">R$ 1.249,90</strong>
-                        </div>
-                    </div>
-                    <div class="flex-grow-1 small">
-                        <div class="d-flex align-items-center justify-content-between mb-1.5"><span class="text-muted"><i class="legend-indicator bg-success"></i> Alimentação</span><strong>35%</strong></div>
-                        <div class="d-flex align-items-center justify-content-between mb-1.5"><span class="text-muted"><i class="legend-indicator" style="background: var(--brand-sky);"></i> Transporte</span><strong>20%</strong></div>
-                        <div class="d-flex align-items-center justify-content-between mb-1.5"><span class="text-muted"><i class="legend-indicator" style="background:#8B5CF6;"></i> Lazer</span><strong>15%</strong></div>
-                    </div>
+        <!-- COLUNA DIREITA: GELADEIRA DE COMPRAS -->
+        <div class="col-12 col-lg-4">
+            <div class="geladeira-sidebar">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-white mb-0" style="font-size: 1.05rem;">🧊 Geladeira de Compras</h5>
+                    <span class="badge bg-info bg-opacity-25 text-sky small">{{ gastos_geladeira.count }} em reflexão</span>
                 </div>
-            </div>
+                <p class="text-muted small mb-3">Itens sob quarentena voluntária para evitar compras impulsivas.</p>
 
-            <!-- GELADEIRA DE COMPRAS -->
-            <div class="pi-card">
-                <h6 class="fw-bold mb-3">❄️ Geladeira de Compras</h6>
-                <div class="geladeira-item-box">
-                    <div class="d-flex align-items-center">
-                        <div class="geladeira-thumb">⌚</div>
-                        <div>
-                            <strong class="d-block small text-white">Smartwatch</strong>
-                            <span class="badge text-sky mt-1" style="font-size: 0.65rem; background: rgba(0, 180, 216, 0.12);">Aguardando 7 dias</span>
+                <div class="d-flex flex-column gap-2">
+                    {% for item in gastos_geladeira %}
+                    <div class="geladeira-item">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <span class="fw-bold text-white">{{ item.descricao }}</span>
+                            <span class="text-sky fw-bold">R$ {{ item.valor|floatformat:2 }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top border-secondary border-opacity-10">
+                            <small class="text-muted">{{ item.categoria }}</small>
+                            <div class="d-flex gap-1">
+                                <a href="{% url 'acao_geladeira' item.id 'comprar' %}" class="btn btn-success btn-sm py-0 px-2" style="font-size: 0.75rem;" title="Comprar">🛒</a>
+                                <a href="{% url 'acao_geladeira' item.id 'desistir' %}" class="btn btn-outline-danger btn-sm py-0 px-2" style="font-size: 0.75rem;" title="Desistir">Desistir</a>
+                            </div>
                         </div>
                     </div>
-                    <strong class="text-sky">R$ 899,90</strong>
-                </div>
-                <div class="geladeira-item-box">
-                    <div class="d-flex align-items-center">
-                        <div class="geladeira-thumb">🎧</div>
-                        <div>
-                            <strong class="d-block small text-white">Fone de ouvido</strong>
-                            <span class="badge text-sky mt-1" style="font-size: 0.65rem; background: rgba(0, 180, 216, 0.12);">Aguardando 5 dias</span>
-                        </div>
+                    {% empty %}
+                    <div class="text-center py-4 text-muted small">
+                        Nenhum item na geladeira no momento. Sua mente está consciente! 🧊✨
                     </div>
-                    <strong class="text-sky">R$ 299,90</strong>
+                    {% endfor %}
                 </div>
             </div>
         </div>
+
     </div>
+
 </div>
-
-<!-- MODAL DE EDIÇÃO DE PRODUTO COM CSRF TOKEN PROTEGIDO -->
-<div class="modal fade" id="modalEdicao" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background-color: #0D172A; border: 1px solid rgba(255,255,255,0.1); color: #FFF;">
-            <div class="modal-header border-bottom border-secondary border-opacity-20">
-                <h5 class="modal-title fw-bold text-sky">✏️ Atualizar Produto e Valor</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="formAtualizarGasto" method="POST">
-                {% csrf_token %}
-                <div class="modal-body">
-                    <input type="hidden" id="edit-id" name="id">
-                    <div class="mb-3">
-                        <label class="form-label text-muted small">Nome / Descrição do Produto</label>
-                        <input type="text" id="edit-descricao" name="descricao" class="form-control form-control-pi" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted small">Valor (R$)</label>
-                        <input type="number" step="0.01" id="edit-valor" name="valor" class="form-control form-control-pi" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted small">Categoria</label>
-                        <select id="edit-categoria" name="categoria" class="form-select form-select-pi">
-                            <option value="Alimentação">Alimentação</option>
-                            <option value="Eletrônicos">Eletrônicos</option>
-                            <option value="Transporte">Transporte</option>
-                            <option value="Lazer">Lazer</option>
-                            <option value="Compras">Compras</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer border-top border-secondary border-opacity-20">
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-sky btn-sm fw-bold">Salvar Alterações</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- JAVASCRIPT ENGINE -->
-<script>
-function abrirModalEdicao(id, descricao, valor, categoria) {
-    document.getElementById('edit-id').value = id;
-    document.getElementById('edit-descricao').value = descricao;
-    document.getElementById('edit-valor').value = valor;
-    document.getElementById('edit-categoria').value = categoria;
-    
-    document.getElementById('formAtualizarGasto').action = `/editar/${id}/`;
-    
-    var modal = new bootstrap.Modal(document.getElementById('modalEdicao'));
-    modal.show();
-}
-
-class DOMINUSSyncEngine {
-    constructor(apiEndpoint, intervalMs = 3000) {
-        this.apiEndpoint = apiEndpoint;
-        this.intervalMs = intervalMs;
-        this.tbody = document.getElementById('tabela-gastos-body');
-        this.cardEconomia = document.getElementById('card-economia-potencial');
-        this.init();
-    }
-
-    init() {
-        setInterval(() => this.sync(), this.intervalMs);
-    }
-
-    async sync() {
-        try {
-            const response = await fetch(this.apiEndpoint, {
-                headers: { 'Accept': 'application/json' }
-            });
-            if (!response.ok) return;
-
-            const dataset = await response.json();
-            this.render(dataset);
-        } catch (error) {
-            console.error('[DOMINUS Engine] Sync Error:', error);
-        }
-    }
-
-    render(data) {
-        let rowsHtml = '';
-        let sumEconomiaGeladeira = 0;
-
-        if (!data || data.length === 0) {
-            rowsHtml = `<tr><td colspan="5" class="text-center text-muted py-4">Nenhum produto cadastrado.</td></tr>`;
-        } else {
-            data.forEach(item => {
-                const amount = parseFloat(item.valor) || 0;
-                const isGeladeira = (item.estado === 'CONGELADO' || item.impulso === true);
-
-                if (isGeladeira) {
-                    sumEconomiaGeladeira += amount;
-                }
-
-                const statusBadge = isGeladeira 
-                    ? `<span class="badge-chip badge-evitavel">Geladeira</span>` 
-                    : `<span class="badge-chip badge-necessario">Ativo</span>`;
-
-                rowsHtml += `
-                    <tr>
-                        <td class="fw-bold">${this.sanitize(item.descricao)}</td>
-                        <td><span class="cat-pill">${this.sanitize(item.categoria || 'Geral')}</span></td>
-                        <td class="fw-bold text-danger">R$ ${amount.toFixed(2)}</td>
-                        <td>${statusBadge}</td>
-                        <td class="text-end">
-                            <button class="btn btn-sm btn-outline-info py-0 px-2 me-1" onclick="abrirModalEdicao('${item.id}', '${this.sanitize(item.descricao)}', '${amount}', '${item.categoria}')">✏️ Editar</button>
-                            <a href="/excluir/${item.id}/" class="btn btn-sm btn-outline-danger py-0 px-2">🗑️</a>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        if (this.tbody) this.tbody.innerHTML = rowsHtml;
-        if (this.cardEconomia) this.cardEconomia.innerText = `R$ ${sumEconomiaGeladeira.toFixed(2)}`;
-    }
-
-    sanitize(str) {
-        if (!str) return '';
-        const temp = document.createElement('div');
-        temp.textContent = str;
-        return temp.innerHTML;
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    new DOMINUSSyncEngine('/api/gastos/', 3000);
-});
-</script>
 {% endblock %}

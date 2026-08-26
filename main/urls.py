@@ -1,25 +1,21 @@
-from django.contrib import admin
 from django.urls import path
-from django.contrib.auth import views as auth_views
-from main.views import (
-    painel_view,
-    excluir_gasto_view,
-    editar_gasto_view,
-    abortar_compra_view,
-    registrar_operador_view,
-    api_gastos_view
-)
+from main import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', painel_view, name='home'),
-    path('painel/', painel_view, name='painel'),
-    path('excluir/<int:id>/', excluir_gasto_view, name='excluir_gasto'),
-    path('editar/<int:id>/', editar_gasto_view, name='editar_gasto'),
-    path('abortar/<int:id>/', abortar_compra_view, name='abortar_compra'),
-    path('registrar-operador/', registrar_operador_view, name='registrar_operador'),
-    path('api/gastos/', api_gastos_view, name='api_gastos'),
-    
-    # Redireciona explicitamente para 'painel' após o logout
-    path('logout/', auth_views.LogoutView.as_view(next_page='painel'), name='logout'),
+    # Autenticação
+    path('login/', views.fazer_login, name='login'),
+    path('logout/', views.fazer_logout, name='logout'),
+    path('registrar-operador/', views.registrar_operador, name='registrar_operador'),
+
+    # Painel
+    path('painel/', views.painel, name='painel'),
+
+    # Ações de Gastos e Geladeira
+    path('editar/<int:id>/', views.editar_gasto, name='editar_gasto'),
+    path('excluir/<int:id>/', views.excluir, name='excluir'),
+    path('geladeira/<int:id>/<str:acao>/', views.acao_geladeira, name='acao_geladeira'),
+    path('meta/criar/', views.criar_meta, name='criar_meta'),
+
+    # API
+    path('api/gastos/', views.api_gastos, name='api_gastos'),
 ]
