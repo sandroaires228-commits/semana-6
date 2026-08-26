@@ -1,27 +1,12 @@
 from django.db import models
 
-class RegistroGasto(models.Model):
-    CATEGORIAS = [
-        ('alimentacao', 'Alimentação'),
-        ('eletronicos', 'Eletrônicos'),
-        ('vestuario', 'Vestuário'),
-        ('lazer', 'Lazer'),
-        ('outros', 'Outros'),
-    ]
-
-    ESTADOS = [
-        ('CONGELADO', 'Congelado na Geladeira'),
-        ('PLANEJADO', 'Gasto Planejado'),
-        ('DESISTIDO', 'Compra Abortada'),
-    ]
-
-    descricao = models.CharField(max_length=100)
+class Gasto(models.Model):
+    descricao = models.CharField(max_length=255)
     valor = models.DecimalField(max_digits=10, decimal_places=2)
-    categoria = models.CharField(max_length=20, choices=CATEGORIAS, default='outros')
+    categoria = models.CharField(max_length=100, default='Geral')
     impulso = models.BooleanField(default=False)
-    dias_reflexao = models.IntegerField(default=7)  # Atribui valor padrão de 7 dias
-    estado = models.CharField(max_length=15, choices=ESTADOS, default='PLANEJADO')
-    data_criacao = models.DateTimeField(auto_now_add=True)
+    estado = models.CharField(max_length=50, default='PLANEJADO')
+    criado_em = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.descricao} - R$ {self.valor}"

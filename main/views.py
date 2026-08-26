@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
+from django.contrib.auth import logout
 from .models import Gasto
 
 def painel(request):
     if request.method == 'POST':
         descricao = request.POST.get('descricao')
         valor = request.POST.get('valor')
-        categoria = request.POST.get('categoria')
+        categoria = request.POST.get('categoria', 'Geral')
         impulso = request.POST.get('impulso') == 'on'
 
         Gasto.objects.create(
@@ -19,7 +20,14 @@ def painel(request):
         return redirect('painel')
 
     gastos = Gasto.objects.all().order_by('-id')
-    return render(request, 'main/painel.html', {'gastos': gastos})
+    gastos_geladeira = Gasto.objects.filter(estado='CONGELADO') | Gasto.objects.filter(impulso=True)
+    economia_potencial = sum(g.valor for g in gastos_geladeira)
+
+    return render(request, 'main/painel.html', {
+        'gastos': gastos,
+        'economia_potencial': economia_potencial,
+        'total_geladeira': gastos_geladeira.count()
+    })
 
 def editar_gasto(request, id):
     gasto = get_object_or_404(Gasto, id=id)
@@ -29,6 +37,7 @@ def editar_gasto(request, id):
         gasto.categoria = request.POST.get('categoria')
         gasto.save()
         return redirect('painel')
+    return redirect('painel')
 
 def abortar(request, id):
     gasto = get_object_or_404(Gasto, id=id)
@@ -39,6 +48,13 @@ def abortar(request, id):
 def excluir(request, id):
     gasto = get_object_or_404(Gasto, id=id)
     gasto.delete()
+    return redirect('painel')
+
+def registrar_operador(request):
+    return redirect('painel')
+
+def fazer_logout(request):
+    logout(request)
     return redirect('painel')
 
 def api_gastos(request):

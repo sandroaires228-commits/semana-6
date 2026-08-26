@@ -19,6 +19,7 @@
         --text-sub: #94A3B8;
         --radius-lg: 16px;
         --radius-md: 12px;
+        --radius-sm: 8px;
     }
 
     body {
@@ -50,33 +51,6 @@
         align-items: center;
         justify-content: center;
         font-size: 1.2rem;
-    }
-
-    .action-tile {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid var(--border-glass);
-        border-radius: var(--radius-md);
-        padding: 0.85rem 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .action-tile:hover {
-        background: rgba(0, 180, 216, 0.08);
-        border-color: rgba(0, 180, 216, 0.3);
-    }
-
-    .action-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1rem;
     }
 
     .geladeira-item-box {
@@ -183,11 +157,11 @@
 </style>
 
 <div class="container-fluid py-3 px-lg-4">
-    <!-- TOP HEADER -->
+    <!-- CABEÇALHO SUPERIOR -->
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
             <h3 class="fw-bold mb-1 d-flex align-items-center">Olá, Sandro! 👋</h3>
-            <p class="text-muted mb-0 small">Gerenciamento financeiro e cadastro de produtos em tempo real.</p>
+            <p class="text-muted mb-0 small">Aqui está o resumo da sua saúde financeira.</p>
         </div>
         <div class="d-flex align-items-center gap-3">
             <span class="badge bg-dark border text-white-50 px-3 py-2 fw-normal" style="border-radius: 8px;">📅 Maio / 2025 ▾</span>
@@ -198,7 +172,7 @@
         </div>
     </div>
 
-    <!-- TOP 4 KPI CARDS -->
+    <!-- CARDS DE KPI -->
     <div class="row g-3 mb-4">
         <div class="col-md-3">
             <div class="kpi-card">
@@ -246,11 +220,11 @@
         </div>
     </div>
 
-    <!-- MAIN GRID 2 COLUMNS -->
+    <!-- PAINEL PRINCIPAL -->
     <div class="row g-4 mb-4">
-        <!-- LEFT COLUMN -->
+        <!-- COLUNA ESQUERDA -->
         <div class="col-lg-8">
-            <!-- BUDGET PROGRESS BAR -->
+            <!-- BARRA DE ORÇAMENTO -->
             <div class="pi-card mb-4">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <h6 class="fw-bold mb-0">Orçamento mensal</h6>
@@ -269,13 +243,13 @@
                 </div>
             </div>
 
-            <!-- CADASTRO DE PRODUTO / TRANSAÇÃO -->
+            <!-- FORMULÁRIO DE CADASTRO DE PRODUTO -->
             <div class="pi-card mb-4">
                 <h6 class="fw-bold mb-3">Cadastrar Produto / Novo Gasto</h6>
                 <form method="POST" action="{% url 'painel' %}" class="row g-3 mb-3">
                     {% csrf_token %}
                     <div class="col-md-5">
-                        <label class="form-label text-muted small fw-medium">NOME / DESCRIÇÃO DO PRODUTO</label>
+                        <label class="form-label text-muted small fw-medium">NOME DO PRODUTO</label>
                         <input type="text" name="descricao" class="form-control form-control-pi" placeholder="Ex: Smartwatch, Almoço..." required>
                     </div>
                     <div class="col-md-3">
@@ -304,11 +278,11 @@
                 </form>
             </div>
 
-            <!-- TABELA DE PRODUTOS E ATUALIZAÇÃO -->
+            <!-- TABELA DE PRODUTOS -->
             <div class="pi-card">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h6 class="fw-bold mb-0">Produtos e Gastos Lançados</h6>
-                    <span class="text-sky small">Atualização em tempo real</span>
+                    <span class="text-sky small">Sincronização Ativa</span>
                 </div>
 
                 <div class="table-responsive">
@@ -319,7 +293,7 @@
                                 <th>CATEGORIA</th>
                                 <th>VALOR</th>
                                 <th>STATUS</th>
-                                <th class="text-end">AÇÕES / ATUALIZAR</th>
+                                <th class="text-end">AÇÕES</th>
                             </tr>
                         </thead>
                         <tbody id="tabela-gastos-body">
@@ -351,9 +325,9 @@
             </div>
         </div>
 
-        <!-- RIGHT SIDEBAR -->
+        <!-- COLUNA DIREITA -->
         <div class="col-lg-4">
-            <!-- DONUT CHART -->
+            <!-- GRÁFICO DONUT -->
             <div class="pi-card mb-4">
                 <h6 class="fw-bold mb-3">Gastos por categoria</h6>
                 <div class="d-flex align-items-center gap-3">
@@ -404,7 +378,7 @@
     </div>
 </div>
 
-<!-- MODAL DE ATUALIZAÇÃO / EDIÇÃO DE PRODUTO -->
+<!-- MODAL DE EDIÇÃO DE PRODUTO COM CSRF TOKEN PROTEGIDO -->
 <div class="modal fade" id="modalEdicao" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background-color: #0D172A; border: 1px solid rgba(255,255,255,0.1); color: #FFF;">
@@ -444,7 +418,7 @@
     </div>
 </div>
 
-<!-- SCRIPT DE SINCRONIZAÇÃO E ATUALIZAÇÃO -->
+<!-- JAVASCRIPT ENGINE -->
 <script>
 function abrirModalEdicao(id, descricao, valor, categoria) {
     document.getElementById('edit-id').value = id;
@@ -452,7 +426,6 @@ function abrirModalEdicao(id, descricao, valor, categoria) {
     document.getElementById('edit-valor').value = valor;
     document.getElementById('edit-categoria').value = categoria;
     
-    // Configura a URL de envio caso você tenha rota configurada para edição
     document.getElementById('formAtualizarGasto').action = `/editar/${id}/`;
     
     var modal = new bootstrap.Modal(document.getElementById('modalEdicao'));
